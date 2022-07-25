@@ -2,7 +2,7 @@ package com.tthieu.network_gps_permission_checks
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.tthieu.network_gps_permission_checks.ui.main.MainFragment
+import com.tthieu.network_gps_permission_checks.ui.statuscheck.MainFragment
 
 class MainActivity : AppCompatActivity() {
 

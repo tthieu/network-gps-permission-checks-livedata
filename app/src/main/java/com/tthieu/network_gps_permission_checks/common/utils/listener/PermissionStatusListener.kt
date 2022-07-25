@@ -1,4 +1,4 @@
-package com.tthieu.network_gps_permission_checks.listener
+package com.tthieu.network_gps_permission_checks.common.utils.listener
 
 import android.content.Context
 import android.content.pm.PackageManager
