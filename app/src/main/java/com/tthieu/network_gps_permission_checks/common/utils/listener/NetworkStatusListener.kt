@@ -11,7 +11,7 @@ import android.os.Build
 import androidx.lifecycle.LiveData
 import com.tthieu.network_gps_permission_checks.R
 
-class NetworkStatusListener(val context: Context):
+class NetworkStatusListener(private val context: Context):
     LiveData<NetworkStatus>() {
 
     private var connectivityManager: ConnectivityManager = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager

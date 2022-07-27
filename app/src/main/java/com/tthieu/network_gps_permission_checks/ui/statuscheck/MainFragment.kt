@@ -52,12 +52,12 @@ class MainFragment : androidx.fragment.app.Fragment() {
 
                         is NetworkStatus.Online -> {
                             this.text = getText(R.string.network_status_online)
-                            this.setTextColor(R.color.text_active)
+                            this.setTextColor(getColor(R.color.text_active))
                         }
 
                         is NetworkStatus.Offline -> {
                             this.text = getText(R.string.network_status_offline)
-                            this.setTextColor(R.color.text_denied)
+                            this.setTextColor(getColor(R.color.text_denied))
                         }
                     }
 
@@ -72,12 +72,12 @@ class MainFragment : androidx.fragment.app.Fragment() {
 
                         is GpsStatus.Enabled -> {
                             this.text = getText(R.string.gps_status_enabled)
-                            this.setTextColor(R.color.text_active)
+                            this.setTextColor(getColor(R.color.text_active))
                         }
 
                         is GpsStatus.Disabled -> {
                             this.text = getText(R.string.gps_status_disabled)
-                            this.setTextColor(R.color.text_denied)
+                            this.setTextColor(getColor(R.color.text_denied))
 
                         }
                     }
@@ -92,17 +92,17 @@ class MainFragment : androidx.fragment.app.Fragment() {
 
                         is PermissionStatus.Blocked -> {
                             this.text = getText(R.string.permission_status_blocked)
-                            this.setTextColor(R.color.text_unactive)
+                            this.setTextColor(getColor(R.color.text_unactive))
                         }
 
                         is PermissionStatus.Denied -> {
                             this.text = getText(R.string.permission_status_denied)
-                            this.setTextColor(R.color.text_denied)
+                            this.setTextColor(getColor(R.color.text_denied))
                         }
 
                         is PermissionStatus.Granted -> {
                             this.text = getText(R.string.permission_status_granted)
-                            this.setTextColor(R.color.text_active)
+                            this.setTextColor(getColor(R.color.text_active))
                         }
                     }
 
@@ -111,5 +111,8 @@ class MainFragment : androidx.fragment.app.Fragment() {
 
         }
     }
+
+    private fun getColor(colorId: Int) =
+        resources.getColor(colorId, null)
 
 }
