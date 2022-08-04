@@ -1,9 +1,13 @@
 package com.tthieu.network_gps_permission_checks.ui.statuscheck
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.tthieu.network_gps_permission_checks.R
 import com.tthieu.network_gps_permission_checks.common.data.source.AppRepository
+import com.tthieu.network_gps_permission_checks.common.utils.Event
 import com.tthieu.network_gps_permission_checks.common.utils.combine
 import com.tthieu.network_gps_permission_checks.common.utils.listener.GpsStatus
 import com.tthieu.network_gps_permission_checks.common.utils.listener.GpsStatusListener
@@ -27,6 +31,34 @@ class MainViewModel(
             permission
         )
     }
+
+    private val _requestPermission = MutableLiveData<Event<Boolean>>()
+    val requestPermission: LiveData<Event<Boolean>>
+        get() = _requestPermission
+
+    private val _openLocationSetting = MutableLiveData<Event<Boolean>>()
+    val openLocationSetting: LiveData<Event<Boolean>>
+        get() = _openLocationSetting
+
+    fun onButtonClicked() {
+        locPermissionUiInfo.value?.let { status ->
+            when (status) {
+
+                is PermissionStatus.Blocked -> {
+
+                }
+
+                is PermissionStatus.Denied -> {
+                    _requestPermission.postValue(Event(true))
+                }
+
+                is PermissionStatus.Granted -> {
+                    _openLocationSetting.postValue(Event(true))
+                }
+            }
+        }
+    }
+
 }
 
 class MainViewModelFactory (

@@ -2,11 +2,13 @@
     <string name="app_name">Network, gps mode, and location permission checks</string>
     <string name="gps_status_enabled" translatable="false">"Location mode is On"</string>
     <string name="gps_status_disabled" translatable="false">"Location mode is Off"</string>
-    <string name="permission_status_granted" translatable="false">Location Permission is Granted</string>
-    <string name="permission_status_denied" translatable="false">Location Permission is Denied</string>
-    <string name="permission_status_blocked" translatable="false">Location Permission is Blocked</string>
+    <string name="permission_status_granted" translatable="false">Approximate location access Granted</string>
+    <string name="permission_status_denied" translatable="false">Approximate location access Denied</string>
+    <string name="permission_status_blocked" translatable="false">Approximate location access Blocked</string>
     <string name="permission_status" translatable="false">Location Permission</string>
     <string name="network_status_online" translatable="false">"Network is Online"</string>
     <string name="network_status_offline" translatable="false">"Network is Offline"</string>
-    <string name="start_tracking">Start Tracking</string>
+    <string name="request_permission">Request permission</string>
+    <string name="revoke_permission">Revoke permission</string>
+    <string name="unblock_permission">Unblock permission</string>
 </resources>

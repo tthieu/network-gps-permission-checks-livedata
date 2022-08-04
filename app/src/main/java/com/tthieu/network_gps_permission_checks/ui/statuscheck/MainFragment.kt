@@ -1,14 +1,18 @@
 package com.tthieu.network_gps_permission_checks.ui.statuscheck
 
+import android.Manifest
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.telephony.CarrierConfigManager.Gps
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import com.tthieu.network_gps_permission_checks.AppStateApplication
 import com.tthieu.network_gps_permission_checks.R
+import com.tthieu.network_gps_permission_checks.common.utils.EventObserver
 import com.tthieu.network_gps_permission_checks.common.utils.listener.GpsStatus
 import com.tthieu.network_gps_permission_checks.common.utils.listener.NetworkStatus
 import com.tthieu.network_gps_permission_checks.common.utils.listener.PermissionStatus
@@ -26,6 +30,16 @@ class MainFragment : androidx.fragment.app.Fragment() {
 
     private lateinit var binding: FragmentMainBinding
 
+    private val locationPermissionRequest = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            updatePermissionCheckUi(PermissionStatus.Granted())
+        } else {
+            updatePermissionCheckUi(PermissionStatus.Denied())
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,80 +53,109 @@ class MainFragment : androidx.fragment.app.Fragment() {
         return binding.root
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        viewModel.uiState.observe(this) { uiState ->
+        viewModel.uiState.observe(viewLifecycleOwner) { uiState ->
 
             uiState.networkStatus?.let {
-
-                binding.tvNetwork.apply {
-
-                    when (it) {
-
-                        is NetworkStatus.Online -> {
-                            this.text = getText(R.string.network_status_online)
-                            this.setTextColor(getColor(R.color.text_active))
-                        }
-
-                        is NetworkStatus.Offline -> {
-                            this.text = getText(R.string.network_status_offline)
-                            this.setTextColor(getColor(R.color.text_denied))
-                        }
-                    }
-
-                }
-
+                updateNetworkCheckUi(it)
             }
 
             uiState.gpsStatus?.let {
-
-                binding.tvGps.apply {
-                    when (it) {
-
-                        is GpsStatus.Enabled -> {
-                            this.text = getText(R.string.gps_status_enabled)
-                            this.setTextColor(getColor(R.color.text_active))
-                        }
-
-                        is GpsStatus.Disabled -> {
-                            this.text = getText(R.string.gps_status_disabled)
-                            this.setTextColor(getColor(R.color.text_denied))
-
-                        }
-                    }
-                }
+                updateGpsCheckUi(it)
             }
 
             uiState.locPermission?.let {
+                updatePermissionCheckUi(it)
+            }
 
-                binding.tvPermission.apply {
+        }
 
-                    when (it) {
+        viewModel.requestPermission.observe(viewLifecycleOwner, EventObserver {
+            locationPermissionRequest.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+        })
 
-                        is PermissionStatus.Blocked -> {
-                            this.text = getText(R.string.permission_status_blocked)
-                            this.setTextColor(getColor(R.color.text_unactive))
-                        }
+        viewModel.openLocationSetting.observe(viewLifecycleOwner, EventObserver {
+            // val intent = Intent().apply {
+            //     action = Settings.ACTION_LOCATION_SOURCE_SETTINGS
+            // }
+            // startActivity(intent)
 
-                        is PermissionStatus.Denied -> {
-                            this.text = getText(R.string.permission_status_denied)
-                            this.setTextColor(getColor(R.color.text_denied))
-                        }
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            val uri: Uri = Uri.fromParts("package", activity?.packageName, null)
+            intent.data = uri
+            startActivity(intent)
+        })
+    }
 
-                        is PermissionStatus.Granted -> {
-                            this.text = getText(R.string.permission_status_granted)
-                            this.setTextColor(getColor(R.color.text_active))
-                        }
-                    }
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+    }
 
+    private fun getColor(colorId: Int) =
+        resources.getColor(colorId, null)
+
+    private fun updatePermissionCheckUi(status: PermissionStatus) {
+        binding.apply {
+
+            when (status) {
+
+                is PermissionStatus.Blocked -> {
+                    tvPermission.text = getText(R.string.permission_status_blocked)
+                    tvPermission.setTextColor(getColor(R.color.text_unactive))
+                    btnPermission.text = getString(R.string.unblock_permission)
+                }
+
+                is PermissionStatus.Denied -> {
+                    tvPermission.text = getText(R.string.permission_status_denied)
+                    tvPermission.setTextColor(getColor(R.color.text_denied))
+                    btnPermission.text = getString(R.string.request_permission)
+                }
+
+                is PermissionStatus.Granted -> {
+                    tvPermission.text = getText(R.string.permission_status_granted)
+                    tvPermission.setTextColor(getColor(R.color.text_active))
+                    btnPermission.text = getString(R.string.revoke_permission)
                 }
             }
 
         }
     }
 
-    private fun getColor(colorId: Int) =
-        resources.getColor(colorId, null)
+    private fun updateGpsCheckUi(status: GpsStatus) {
+        binding.tvGps.apply {
+            when (status) {
 
+                is GpsStatus.Enabled -> {
+                    text = getText(R.string.gps_status_enabled)
+                    setTextColor(getColor(R.color.text_active))
+                }
+
+                is GpsStatus.Disabled -> {
+                    text = getText(R.string.gps_status_disabled)
+                    setTextColor(getColor(R.color.text_denied))
+                }
+            }
+        }
+    }
+
+    private fun updateNetworkCheckUi(status: NetworkStatus) {
+        binding.tvNetwork.apply {
+
+            when (status) {
+
+                is NetworkStatus.Online -> {
+                    this.text = getText(R.string.network_status_online)
+                    this.setTextColor(getColor(R.color.text_active))
+                }
+
+                is NetworkStatus.Offline -> {
+                    this.text = getText(R.string.network_status_offline)
+                    this.setTextColor(getColor(R.color.text_denied))
+                }
+            }
+
+        }
+    }
 }

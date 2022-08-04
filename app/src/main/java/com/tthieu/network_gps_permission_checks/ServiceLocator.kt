@@ -32,7 +32,7 @@ object ServiceLocator {
     private fun createAppLocalDataSource(context: Context): AppDataSource {
         val gpsStatusListener = GpsStatusListener(context)
         val networkStatusListener = NetworkStatusListener(context)
-        val gpsPermissionStatusListener = PermissionStatusListener(context, Manifest.permission.ACCESS_FINE_LOCATION)
+        val gpsPermissionStatusListener = PermissionStatusListener(context, Manifest.permission.ACCESS_COARSE_LOCATION)
 
         return AppLocalDataSource(networkStatusListener, gpsStatusListener, gpsPermissionStatusListener)
     }
